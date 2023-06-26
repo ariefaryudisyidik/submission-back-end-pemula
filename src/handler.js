@@ -158,7 +158,7 @@ const updateBookByIdHandler = (request, h) => {
       message: 'Buku berhasil diperbarui',
     };
 
-    return h.response(response).code(200);
+    return h.response(response);
   }
 
   const response = {
@@ -182,7 +182,7 @@ const deleteBookByIdHandler = (request, h) => {
       message: 'Buku berhasil dihapus',
     };
 
-    return h.response(response).code(200);
+    return h.response(response);
   }
 
   const response = {
