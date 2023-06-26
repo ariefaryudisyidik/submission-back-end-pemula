@@ -64,17 +64,18 @@ const getAllBooksHandler = (request, h) => {
     filteredBooks = filteredBooks.filter((book) => book.name.toLowerCase().includes(keyword));
   }
 
-  if (reading !== undefined) {
+  if (reading) {
     const isReading = reading === '1';
     filteredBooks = filteredBooks.filter((book) => book.reading === isReading);
   }
 
-  if (finished !== undefined) {
+  if (finished) {
     const isFinished = finished === '1';
     filteredBooks = filteredBooks.filter((book) => book.finished === isFinished);
   }
 
   const response = {
+    test: name,
     status: 'success',
     data: {
       books: filteredBooks.map((book) => ({
