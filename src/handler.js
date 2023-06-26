@@ -95,4 +95,76 @@ const getBookByIdHandler = (request, h) => {
   return h.response(response).code(404);
 };
 
-module.exports = { addBookHandler, getAllBooksHandler, getBookByIdHandler };
+const updateBookByIdHandler = (request, h) => {
+  const { bookId } = request.params;
+
+  const {
+    name,
+    year,
+    author,
+    summary,
+    publisher,
+    pageCount,
+    readPage,
+    reading,
+  } = request.payload;
+
+  const updatedAt = new Date().toISOString();
+
+  const index = books.findIndex((book) => book.id === bookId);
+
+  if (index !== -1) {
+    if (!name) {
+      const response = {
+        status: 'fail',
+        message: 'Gagal memperbarui buku. Mohon isi nama buku',
+      };
+
+      return h.response(response).code(400);
+    }
+
+    if (readPage > pageCount) {
+      const response = {
+        status: 'fail',
+        message:
+          'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
+      };
+
+      return h.response(response).code(400);
+    }
+
+    books[index] = {
+      ...books[index],
+      name,
+      year,
+      author,
+      summary,
+      publisher,
+      pageCount,
+      readPage,
+      reading,
+      updatedAt,
+    };
+
+    const response = {
+      status: 'success',
+      message: 'Buku berhasil diperbarui',
+    };
+
+    return h.response(response).code(200);
+  }
+
+  const response = {
+    status: 'fail',
+    message: 'Gagal memperbarui buku. Id tidak ditemukan',
+  };
+
+  return h.response(response).code(404);
+};
+
+module.exports = {
+  addBookHandler,
+  getAllBooksHandler,
+  getBookByIdHandler,
+  updateBookByIdHandler,
+};
