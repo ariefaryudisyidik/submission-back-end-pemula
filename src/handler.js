@@ -3,14 +3,7 @@ const books = require('./books');
 
 const addBookHandler = (request, h) => {
   const {
-    name,
-    year,
-    author,
-    summary,
-    publisher,
-    pageCount,
-    readPage,
-    reading,
+    name, year, author, summary, publisher, pageCount, readPage, reading,
   } = request.payload;
 
   const id = nanoid(16);
@@ -44,8 +37,7 @@ const addBookHandler = (request, h) => {
   } else if (readPage > pageCount) {
     response = {
       status: 'fail',
-      message:
-        'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+      message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
     };
   } else {
     response = {
@@ -62,16 +54,39 @@ const addBookHandler = (request, h) => {
   return h.response(response).code(statusCode);
 };
 
-const getAllBooksHandler = () => ({
-  status: 'success',
-  data: {
-    books: books.map(({ id, name, publisher }) => ({
-      id,
-      name,
-      publisher,
-    })),
-  },
-});
+const getAllBooksHandler = (request, h) => {
+  const { name, reading, finished } = request.query;
+
+  let filteredBooks = books;
+
+  if (name) {
+    const keyword = name.toLowerCase();
+    filteredBooks = filteredBooks.filter((book) => book.name.toLowerCase().includes(keyword));
+  }
+
+  if (reading !== undefined) {
+    const isReading = reading === '1';
+    filteredBooks = filteredBooks.filter((book) => book.reading === isReading);
+  }
+
+  if (finished !== undefined) {
+    const isFinished = finished === '1';
+    filteredBooks = filteredBooks.filter((book) => book.finished === isFinished);
+  }
+
+  const response = {
+    status: 'success',
+    data: {
+      books: filteredBooks.map((book) => ({
+        id: book.id,
+        name: book.name,
+        publisher: book.publisher,
+      })),
+    },
+  };
+
+  return h.response(response);
+};
 
 const getBookByIdHandler = (request, h) => {
   const { bookId } = request.params;
@@ -99,14 +114,7 @@ const updateBookByIdHandler = (request, h) => {
   const { bookId } = request.params;
 
   const {
-    name,
-    year,
-    author,
-    summary,
-    publisher,
-    pageCount,
-    readPage,
-    reading,
+    name, year, author, summary, publisher, pageCount, readPage, reading,
   } = request.payload;
 
   const updatedAt = new Date().toISOString();
@@ -126,8 +134,7 @@ const updateBookByIdHandler = (request, h) => {
     if (readPage > pageCount) {
       const response = {
         status: 'fail',
-        message:
-          'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
+        message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
       };
 
       return h.response(response).code(400);
