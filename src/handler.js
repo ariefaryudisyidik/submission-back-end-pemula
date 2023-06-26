@@ -33,26 +33,21 @@ const addBookHandler = (request, h) => {
     updatedAt,
   };
 
-  books.push(newBook);
-
   let response = {};
-  let statusCode = 0;
-  const isSuccess = books.filter((book) => book.id === id).length > 0;
+  let statusCode = 400;
 
   if (!name) {
     response = {
       status: 'fail',
       message: 'Gagal menambahkan buku. Mohon isi nama buku',
     };
-    statusCode = 400;
   } else if (readPage > pageCount) {
     response = {
       status: 'fail',
       message:
         'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
     };
-    statusCode = 400;
-  } else if (isSuccess) {
+  } else {
     response = {
       status: 'success',
       message: 'Buku berhasil ditambahkan',
@@ -61,15 +56,21 @@ const addBookHandler = (request, h) => {
       },
     };
     statusCode = 201;
-  } else {
-    response = {
-      status: 'fail',
-      message: 'Buku gagal ditambahkan',
-    };
-    statusCode = 500;
+    books.push(newBook);
   }
 
   return h.response(response).code(statusCode);
 };
 
-module.exports = { addBookHandler };
+const getAllBooksHandler = () => ({
+  status: 'success',
+  data: {
+    books: books.map(({ id, name, publisher }) => ({
+      id,
+      name,
+      publisher,
+    })),
+  },
+});
+
+module.exports = { addBookHandler, getAllBooksHandler };
